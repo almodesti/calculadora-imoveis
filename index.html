@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>André Modesti — Retorno Real dos Imóveis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0a1a1f; --bg2:#0e2a2c; --ink-deep:#0b1620;
+    --cream:#f6f1e6; --cream-2:#efe7d6;
+    --navy:#16283a; --navy-2:#1d3448;
+    --gold:#c39a4d; --gold-lt:#e2c789; --gold-deep:#9c7a34;
+    --teal:#2f9d92; --teal-lt:#57c3b6;
+    --good:#3f9e6a; --good-lt:#7dd8a4; --bad:#c8564b; --bad-lt:#e79086;
+    --soft:#9fb0b4; --line:rgba(195,154,77,.22);
+    --display:"Cormorant Garamond",Georgia,serif;
+    --script:"Cinzel",Georgia,serif;
+    --sans:"Manrope",-apple-system,"Segoe UI",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);font-size:16px;line-height:1.55;color:#e9e4d6;min-height:100vh;
+    background:
+      radial-gradient(120% 80% at 15% -5%, rgba(47,157,146,.18), transparent 55%),
+      radial-gradient(120% 90% at 95% 0%, rgba(195,154,77,.12), transparent 50%),
+      linear-gradient(160deg,var(--bg2) 0%, var(--bg1) 45%, var(--ink-deep) 100%);
+    background-attachment:fixed;
+  }
+  /* grão sutil */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.045;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .wrap{max-width:940px;margin:0 auto;padding:56px 20px 90px;position:relative;z-index:1}
+
+  /* ---------- cabeçalho ---------- */
+  header{text-align:center;margin-bottom:40px}
+  .mark{display:inline-flex;align-items:center;gap:16px;margin-bottom:20px}
+  .mark .sigil{width:52px;height:52px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-family:var(--script);font-size:20px;color:var(--gold-lt);letter-spacing:.02em;position:relative}
+  .mark .sigil::after{content:"";position:absolute;inset:4px;border:1px solid rgba(195,154,77,.3);border-radius:50%}
+  .wm{font-family:var(--script);font-size:clamp(26px,5vw,38px);font-weight:600;letter-spacing:.18em;color:var(--cream)}
+  .kicker{font-family:var(--sans);font-size:12.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:0}
+  h1.lead{font-family:var(--display);font-weight:500;font-size:clamp(30px,6vw,52px);line-height:1.08;color:#f3eeE0;max-width:16ch;margin:0 auto 14px;opacity:0}
+  h1.lead em{font-style:italic;color:var(--gold-lt)}
+  .dek{color:var(--soft);max-width:52ch;margin:0 auto;font-size:15.5px;opacity:0}
+  .cdi-row{display:inline-flex;gap:12px;align-items:center;margin-top:26px;padding:10px 18px;border:1px solid var(--line);border-radius:100px;background:rgba(11,22,32,.4);backdrop-filter:blur(6px);opacity:0}
+  .cdi-row label{color:#cfd6d2;font-size:13.5px;letter-spacing:.02em}
+  .cdi-row input{width:74px;padding:5px 8px;border:none;border-bottom:1px solid var(--gold);background:transparent;color:var(--gold-lt);
+    font-family:var(--display);font-size:22px;font-weight:600;text-align:center}
+  .cdi-row input:focus{outline:none}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(18px)}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .in{animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;opacity:1!important;transform:none!important}}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:16px;flex-wrap:wrap}
+  .toolbar button{font-family:var(--sans);background:rgba(11,22,32,.5);border:1px solid var(--line);color:var(--gold-lt);
+    padding:8px 16px;border-radius:100px;font-size:12.5px;letter-spacing:.03em;cursor:pointer;transition:.25s}
+  .toolbar button:hover{border-color:var(--gold);background:rgba(195,154,77,.1);transform:translateY(-1px)}
+
+  /* ---------- card imóvel (página de relatório) ---------- */
+  .card{position:relative;background:linear-gradient(180deg,var(--cream) 0%,var(--cream-2) 100%);color:var(--navy);
+    border-radius:4px;padding:26px 28px 24px;margin-bottom:18px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,.6),0 2px 0 rgba(255,255,255,.4) inset;}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold-deep),var(--gold-lt),var(--gold-deep));border-radius:4px 4px 0 0}
+  .card .top{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+  .idx{font-family:var(--display);font-size:26px;font-weight:600;color:var(--gold-deep);min-width:38px;font-style:italic}
+  .nome{flex:1;font-family:var(--display);font-size:24px;font-weight:600;color:var(--navy);border:none;border-bottom:1px solid transparent;padding:2px 0;background:transparent}
+  .nome:focus{outline:none;border-bottom-color:var(--gold)}
+  .del{background:none;border:none;color:#b6b0a0;cursor:pointer;font-size:22px;line-height:1;padding:2px 6px;transition:.2s;border-radius:50%}
+  .del:hover{color:var(--bad);background:rgba(200,86,75,.1)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px 16px}
+  .fld label{display:block;font-size:10.5px;color:#8a8674;text-transform:uppercase;letter-spacing:.14em;margin-bottom:5px;font-weight:600}
+  .fld label .q{color:var(--gold-deep);cursor:help}
+  .fld input{width:100%;padding:10px 12px;border:1px solid #ddd3bd;border-radius:3px;font-family:var(--sans);font-size:15px;color:var(--navy);background:rgba(255,255,255,.7);transition:.2s}
+  .fld input:focus{outline:none;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(195,154,77,.14)}
+  .fld input::placeholder{color:#bcb5a0}
+
+  .result{margin-top:20px;padding-top:18px;border-top:1px solid rgba(22,40,58,.1)}
+  .bar{display:flex;align-items:center;gap:12px;margin-top:8px}
+  .bar .t{width:46px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8a8674;font-weight:600}
+  .bar .track{flex:1;height:14px;background:#e7dfca;border-radius:100px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
+  .bar .fill{display:block;height:100%;width:0;border-radius:100px;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+  .fReal{background:linear-gradient(90deg,var(--teal),var(--teal-lt))}
+  .fReal.neg{background:linear-gradient(90deg,#a8443a,var(--bad))}
+  .fCdi{background:linear-gradient(90deg,var(--navy),#3a5169)}
+  .bar .pct{width:66px;text-align:right;font-family:var(--display);font-size:20px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums}
+  .pill{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.02em;padding:5px 13px;border-radius:100px;white-space:nowrap}
+  .up{background:rgba(63,158,106,.14);color:var(--good)}.down{background:rgba(200,86,75,.14);color:var(--bad)}
+  .detalhe{font-size:12.5px;color:#8a8674;margin-top:12px;letter-spacing:.01em}
+  .detalhe b{color:var(--navy);font-weight:700}
+  .placeholder-msg{font-size:13px;color:#a49e8c;font-style:italic}
+
+  .addbtn{display:block;width:100%;padding:16px;background:transparent;border:1px dashed rgba(195,154,77,.4);border-radius:4px;
+    color:var(--gold-lt);font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:.04em;cursor:pointer;margin-bottom:30px;transition:.25s}
+  .addbtn:hover{border-color:var(--gold);background:rgba(195,154,77,.07);color:var(--cream)}
+
+  /* ---------- veredito (herói) ---------- */
+  .total{position:relative;background:linear-gradient(165deg,var(--navy-2),var(--navy) 60%,var(--ink-deep));
+    border:1px solid var(--line);border-radius:6px;padding:34px 34px 30px;overflow:hidden}
+  .total::after{content:"";position:absolute;top:-40%;right:-10%;width:280px;height:280px;
+    background:radial-gradient(circle,rgba(195,154,77,.16),transparent 70%);pointer-events:none}
+  .total .h{font-family:var(--sans);font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+  .total .big{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  .total .v{font-family:var(--display);font-size:clamp(64px,14vw,104px);font-weight:600;line-height:.86;color:var(--cream);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .total .v.pos{color:var(--good-lt)}.total .v.neg{color:var(--bad-lt)}
+  .total .sub{color:var(--soft);font-size:13.5px;margin-top:12px;max-width:30ch}
+  .total .cdi{text-align:right}
+  .total .cdi .l{color:var(--soft);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+  .total .cdi b{display:block;font-family:var(--display);font-size:40px;font-weight:600;color:var(--gold-lt);font-variant-numeric:tabular-nums}
+  .verdict{margin-top:24px;padding:16px 20px;border-radius:4px;font-size:15px;line-height:1.5;border-left:3px solid}
+  .verdict.up{background:rgba(63,158,106,.1);border-color:var(--good);color:var(--good-lt)}
+  .verdict.down{background:rgba(200,86,75,.1);border-color:var(--bad);color:var(--bad-lt)}
+  .verdict b{color:#fff}
+
+  .foot{text-align:center;color:#6d7c7e;font-size:12.5px;margin-top:34px;line-height:1.7;letter-spacing:.02em}
+  .foot .sig{font-family:var(--script);color:var(--gold-lt);font-size:15px;letter-spacing:.12em}
+  .foot a{color:var(--soft)}
+
+  /* ---------- lock ---------- */
+  .lock{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:linear-gradient(160deg,var(--bg2),var(--ink-deep))}
+  .lock .box{background:linear-gradient(180deg,var(--cream),var(--cream-2));color:var(--navy);border-radius:6px;padding:40px 34px;max-width:380px;width:100%;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);position:relative}
+  .lock .box::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold-deep),var(--gold-lt),var(--gold-deep));border-radius:6px 6px 0 0}
+  .lock .sigil{width:56px;height:56px;margin:0 auto 16px;border:1px solid var(--gold-deep);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px}
+  .lock h3{font-family:var(--display);font-size:27px;font-weight:600;margin-bottom:6px}
+  .lock p{color:#7a7460;font-size:14px;margin-bottom:20px}
+  .lock input{width:100%;padding:14px;border:1px solid #ddd3bd;border-radius:4px;font-family:var(--display);font-size:26px;text-align:center;letter-spacing:.4em;margin-bottom:14px;color:var(--navy)}
+  .lock input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(195,154,77,.16)}
+  .lock button{width:100%;padding:14px;background:linear-gradient(90deg,var(--gold-deep),var(--gold));color:#231a06;border:none;border-radius:4px;font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:.2s}
+  .lock button:hover{filter:brightness(1.08)}
+  .lock .err{color:var(--bad);font-size:13.5px;min-height:20px;margin-top:10px}
+</style></head>
+<body>
+
+<div class="lock" id="lockScreen" style="display:none">
+  <div class="box">
+    <div class="sigil">🔒</div>
+    <h3>Acesso protegido</h3>
+    <p>Seus dados estão criptografados neste navegador. Digite o PIN para acessar.</p>
+    <input id="pinInput" type="password" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')unlock()">
+    <button onclick="unlock()">Desbloquear</button>
+    <div class="err" id="pinErr"></div>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <header>
+    <div class="mark reveal" id="r0"><span class="sigil">AM</span><span class="wm">André Modesti</span></div>
+    <div class="kicker reveal" id="r1">Inteligência imobiliária</div>
+    <h1 class="lead reveal" id="r2">Quanto do seu patrimônio rende <em>menos que a renda fixa?</em></h1>
+    <p class="dek reveal" id="r3">Retorno real de cada imóvel, descontando IPTU, condomínio, vacância, reforma e IR, comparado com o CDI. Roda no seu navegador, nenhum dado sai daqui.</p>
+    <div class="cdi-row reveal" id="r4"><label>CDI ao ano</label><input id="cdi" type="number" value="10.5" step="0.1" oninput="calc()"><label>%</label></div>
+  </header>
+
+  <div class="toolbar">
+    <button id="pinBtn" onclick="togglePin()">🔒 Proteger com PIN</button>
+    <button onclick="limpar()">Limpar tudo</button>
+  </div>
+  <div id="lista"></div>
+  <button class="addbtn" onclick="addImovel()">+ Adicionar imóvel</button>
+
+  <div class="total reveal" id="r5">
+    <div class="h">Retorno real do portfólio</div>
+    <div class="big">
+      <div><div class="v" id="pfPct">—</div><div class="sub">ao ano, considerando renda líquida de custos e IR mais valorização estimada</div></div>
+      <div class="cdi"><span class="l">CDI no período</span><b id="cdiEcho">10,5%</b></div>
+    </div>
+    <div class="verdict" id="verdict" style="display:none"></div>
+  </div>
+
+  <p class="foot">
+    Estimativa com base nos dados que você informar. Não é recomendação de investimento. Seus dados ficam só no seu navegador, criptografados quando você define um PIN.<br>
+    <span class="sig">André Modesti</span> · ferramenta open source · licença MIT
+  </p>
+</div>
+
+<script>
+  const brl = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const pct = n => n.toFixed(1).replace('.',',') + '%';
+  const KEY = 'am_calc_imoveis';
+  let imoveis = [], seq = 0, currentPin = null;
+  const CRYPTO_OK = !!(window.crypto && crypto.subtle && window.isSecureContext);
+
+  const CAMPOS = [
+    {k:'valor', lab:'Valor de mercado (R$)', ph:'500000'},
+    {k:'aluguel', lab:'Aluguel mensal (R$)', ph:'2500'},
+    {k:'condominio', lab:'Condomínio mensal (R$)', ph:'0'},
+    {k:'iptu', lab:'IPTU anual (R$)', ph:'1800'},
+    {k:'manutencao', lab:'Manut./reforma ano (R$)', ph:'2000'},
+    {k:'vacancia', lab:'Vacância (meses/ano)', ph:'1'},
+    {k:'valorizacao', lab:'Valorização % a.a.', ph:'4', hint:'Quanto o imóvel valoriza por ano, em %. Deixe 0 se não quiser contar.'},
+    {k:'ir', lab:'IR sobre aluguel % efetivo', ph:'0', hint:'Alíquota efetiva do carnê-leão sobre o aluguel, conforme sua faixa. Deixe 0 se isento ou não quiser contar.'},
+  ];
+
+  // ---- cripto ----
+  const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+  const ub64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  async function deriveKey(pin, salt){
+    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:120000, hash:'SHA-256'}, km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+  }
+  async function encryptPayload(obj, pin){
+    const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await deriveKey(pin, salt);
+    const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(JSON.stringify(obj)));
+    return {enc:true, salt:b64(salt), iv:b64(iv), ct:b64(ct)};
+  }
+  async function decryptPayload(stored, pin){
+    const key = await deriveKey(pin, ub64(stored.salt));
+    const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:ub64(stored.iv)}, key, ub64(stored.ct));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+  async function save(){
+    const payload = {cdi:document.getElementById('cdi').value, imoveis};
+    try{
+      if(currentPin){ localStorage.setItem(KEY, JSON.stringify(await encryptPayload(payload, currentPin))); }
+      else { localStorage.setItem(KEY, JSON.stringify({enc:false, data:payload})); }
+    }catch(e){}
+  }
+  function applyPayload(p){ if(p && p.imoveis && p.imoveis.length){ imoveis=p.imoveis; seq=Math.max(...imoveis.map(i=>i.id)); if(p.cdi)document.getElementById('cdi').value=p.cdi; return true; } return false; }
+
+  async function unlock(){
+    const pin = document.getElementById('pinInput').value.trim(); const errEl = document.getElementById('pinErr');
+    if(!pin){ errEl.textContent='Digite o PIN.'; return; }
+    try{
+      const p = await decryptPayload(JSON.parse(localStorage.getItem(KEY)), pin);
+      currentPin = pin; document.getElementById('lockScreen').style.display='none'; document.getElementById('app').style.display='block';
+      if(!applyPayload(p)){ addImovel(); addImovel(); } else { render(); }
+      updatePinBtn(); revealHeader();
+    }catch(e){ errEl.textContent='PIN incorreto.'; }
+  }
+  function updatePinBtn(){
+    const btn = document.getElementById('pinBtn');
+    if(!CRYPTO_OK){ btn.textContent='🔒 PIN (só na versão online)'; btn.style.opacity=.5; btn.title='A proteção por PIN precisa da calculadora aberta por um link https. Como arquivo local, os dados ficam sem criptografia.'; return; }
+    btn.textContent = currentPin ? '🔓 Remover PIN' : '🔒 Proteger com PIN';
+  }
+  async function togglePin(){
+    if(!CRYPTO_OK){ alert('A proteção por PIN só funciona na versão hospedada (link https). Como arquivo local, seus dados já ficam só neste navegador, mas sem PIN.'); return; }
+    if(currentPin){ if(confirm('Remover o PIN? Os dados voltam a ficar salvos sem criptografia neste navegador.')){ currentPin=null; await save(); updatePinBtn(); } return; }
+    const pin = prompt('Crie um PIN (fica só no seu navegador):'); if(!pin) return;
+    const conf = prompt('Confirme o PIN:'); if(pin!==conf){ alert('Os PINs não bateram. Tente de novo.'); return; }
+    currentPin = pin.trim(); await save(); updatePinBtn();
+    alert('Pronto. Da próxima vez que abrir, vai pedir o PIN. Se esquecer, os dados não poderão ser recuperados.');
+  }
+
+  function addImovel(nome){ const id=++seq; const novo={id,nome:nome||('Imóvel '+id)}; CAMPOS.forEach(c=>novo[c.k]=''); imoveis.push(novo); render(); }
+  function upd(id,k,v){ const im=imoveis.find(x=>x.id===id); if(im){im[k]=v; calc();} }
+  function rm(id){ imoveis=imoveis.filter(x=>x.id!==id); render(); }
+  function limpar(){ if(confirm('Apagar todos os imóveis?')){ imoveis=[]; seq=0; localStorage.removeItem(KEY); currentPin=null; updatePinBtn(); addImovel(); } }
+
+  function render(){
+    const lista=document.getElementById('lista'); lista.innerHTML='';
+    imoveis.forEach((im,i)=>{
+      const card=document.createElement('div'); card.className='card reveal'; card.style.animationDelay=(i*.06)+'s';
+      card.innerHTML=`
+        <div class="top">
+          <span class="idx">${String(i+1).padStart(2,'0')}</span>
+          <input class="nome" value="${im.nome}" oninput="upd(${im.id},'nome',this.value)">
+          <button class="del" title="remover" onclick="rm(${im.id})">×</button>
+        </div>
+        <div class="grid">
+          ${CAMPOS.map(c=>`<div class="fld"><label>${c.lab}${c.hint?` <span class="q" title="${c.hint}">ⓘ</span>`:''}</label>
+            <input type="number" placeholder="${c.ph}" value="${im[c.k]||''}" oninput="upd(${im.id},'${c.k}',this.value)"></div>`).join('')}
+        </div>
+        <div class="result" id="res-${im.id}"></div>`;
+      lista.appendChild(card);
+      requestAnimationFrame(()=>card.classList.add('in'));
+    });
+    calc();
+  }
+
+  function retornoImovel(im){
+    const valor=parseFloat(im.valor)||0; if(valor<=0) return null;
+    const aluguel=parseFloat(im.aluguel)||0, cond=parseFloat(im.condominio)||0, iptu=parseFloat(im.iptu)||0, manut=parseFloat(im.manutencao)||0;
+    const vac=Math.min(12,Math.max(0,parseFloat(im.vacancia)||0)), valoriz=parseFloat(im.valorizacao)||0, ir=Math.min(100,Math.max(0,parseFloat(im.ir)||0));
+    const receita=aluguel*(12-vac), imposto=receita*(ir/100), custos=(cond*12)+iptu+manut+imposto;
+    const rendaLiquida=receita-custos, ganhoValoriz=valor*(valoriz/100), retorno=((rendaLiquida+ganhoValoriz)/valor)*100;
+    return {valor,rendaLiquida,ganhoValoriz,retorno,imposto,valoriz};
+  }
+
+  function calc(){
+    const cdi=parseFloat(document.getElementById('cdi').value)||0;
+    document.getElementById('cdiEcho').textContent=pct(cdi);
+    let somaValor=0,somaTotal=0;
+    imoveis.forEach(im=>{
+      const r=retornoImovel(im); const el=document.getElementById('res-'+im.id); if(!el) return;
+      if(!r){ el.innerHTML='<span class="placeholder-msg">Informe ao menos valor de mercado e aluguel para ver o retorno.</span>'; return; }
+      somaValor+=r.valor; somaTotal+=(r.rendaLiquida+r.ganhoValoriz);
+      const dif=r.retorno-cdi, cls=dif>=0?'up':'down', base=Math.max(cdi,Math.abs(r.retorno),1);
+      const wReal=Math.max(2,Math.min(100,(Math.abs(r.retorno)/base)*100)), wCdi=Math.max(2,Math.min(100,(cdi/base)*100));
+      el.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="flex:1;min-width:230px">
+            <div class="bar"><span class="t">Real</span><span class="track"><span class="fill fReal ${r.retorno<0?'neg':''}" style="width:${wReal}%"></span></span><span class="pct">${pct(r.retorno)}</span></div>
+            <div class="bar"><span class="t">CDI</span><span class="track"><span class="fill fCdi" style="width:${wCdi}%"></span></span><span class="pct">${pct(cdi)}</span></div>
+          </div>
+          <span class="pill ${cls}">${dif>=0?'+':''}${dif.toFixed(1).replace('.',',')} vs CDI</span>
+        </div>
+        <div class="detalhe">Renda líquida/ano: <b>${brl(r.rendaLiquida)}</b>${r.valoriz?` &nbsp;·&nbsp; valorização/ano: <b>${brl(r.ganhoValoriz)}</b>`:''}${r.imposto?` &nbsp;·&nbsp; IR: ${brl(r.imposto)}`:''}</div>`;
+    });
+    const pfEl=document.getElementById('pfPct'), vEl=document.getElementById('verdict');
+    if(somaValor>0){
+      const pfRet=(somaTotal/somaValor)*100, dif=pfRet-cdi;
+      pfEl.textContent=pct(pfRet); pfEl.className='v '+(dif>=0?'pos':'neg');
+      vEl.style.display='block'; vEl.className='verdict '+(dif>=0?'up':'down');
+      vEl.innerHTML = dif>=0
+        ? `Seu portfólio rende <b>acima do CDI</b> (${pct(pfRet)} contra ${pct(cdi)}). Os imóveis em vermelho puxam a média para baixo — vale avaliar realocação.`
+        : `Seu portfólio rende <b>abaixo do CDI</b> (${pct(pfRet)} contra ${pct(cdi)}). Os imóveis em vermelho rendem menos que a renda fixa — considere realocar ou ajustar.`;
+    } else { pfEl.textContent='—'; pfEl.className='v'; vEl.style.display='none'; }
+    save();
+  }
+
+  function revealHeader(){ ['r0','r1','r2','r3','r4','r5'].forEach((id,i)=>{ const el=document.getElementById(id); if(el){ el.style.animationDelay=(.1+i*.1)+'s'; el.classList.add('in'); } }); }
+
+  (function boot(){
+    let stored=null; try{ stored=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+    if(stored && stored.enc===true){
+      if(!CRYPTO_OK){ document.getElementById('lockScreen').style.display='flex'; document.getElementById('pinErr').textContent='Estes dados foram protegidos na versão online. Abra pelo link https para desbloquear.'; return; }
+      document.getElementById('lockScreen').style.display='flex'; document.getElementById('pinInput').focus();
+    } else {
+      document.getElementById('app').style.display='block';
+      if(stored && stored.enc===false && applyPayload(stored.data)){ render(); } else { addImovel(); addImovel(); }
+      updatePinBtn(); revealHeader();
+    }
+  })();
+</script>
+</body></html>
